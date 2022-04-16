@@ -13,7 +13,8 @@ from jax import random
 
 config = {
     'num_query':12800,
-    'num_shape':50
+    'num_shape':20,
+    'batch_size':5
 }
 
 def d_to_line_seg(P, A, B):
@@ -162,6 +163,7 @@ def get_query(Min, Max, config):
 
 vmap_get_query = vmap(get_query, in_axes = (0,0, None), out_axes = 0)
 
+#loop, because of the memory limit
 def get_supervised_data(config):
     radius = np.load('data/data_set/radius.npy')
     batch_verts = np.load('data/data_set/batch_verts.npy')
@@ -169,15 +171,25 @@ def get_supervised_data(config):
     Min = np.min(radius, 1).reshape(config['num_shape'], )
     Max = np.max(radius, 1).reshape(config['num_shape'], )
     query = vmap_get_query(Min, Max, config)
-    len = config['num_shape'] * config['num_query']
-    batch_sdf = batch_to_polygon(query, batch_verts, faces).reshape(len, 1)
+    Len = config['num_shape'] * config['num_query']
+    batch_len = config['batch_size'] * config['num_query']
+    batch_query = query[0:config['batch_size']]
+    batch_batch_verts = batch_verts[0:config['batch_size']]
+    batch_sdf = batch_to_polygon(batch_query, batch_batch_verts, faces).reshape(batch_len, 1)
+    for i in range(config['num_shape'] // config['batch_size'] - 1):
+        start = (i + 1) * config['batch_size']
+        end = (i + 2) * config['batch_size']
+        batch_query = query[start:end]
+        batch_batch_verts = batch_verts[start:end]
+        sdf = batch_to_polygon(batch_query, batch_batch_verts, faces).reshape(batch_len, 1)
+        batch_sdf = np.concatenate([batch_sdf, sdf], 0)
     shape_index = np.arange(config['num_shape'])
     shape_index = np.repeat(shape_index, config['num_query'])
-    shape_index = shape_index.reshape(len, 1)
-    query = query.reshape(len, 3)
+    shape_index = shape_index.reshape(Len, 1)
+    query = query.reshape(Len, 3)
     supervised_data = np.concatenate([query, shape_index, batch_sdf], 1)
     np.save('data/data_set/supervised_data.npy', supervised_data)
-    print('{} entry has generated,sample here{}'.format(len, supervised_data[0]))
+    print('{} entry has generated,sample here{}'.format(Len, supervised_data[0]))
 
 if __name__ == '__main__':
     get_supervised_data(config)

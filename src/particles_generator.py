@@ -11,23 +11,24 @@ from jax import random
 import meshio
 
 config = {
-    'mesh_path':'/home/yawnlion/Desktop/PYproject/3D_deepSDF/data/data_set/sphere.msh',
-    'num_shape':50,
+    'mesh_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/sphere.msh',
+    'num_shape':20,
     'mean':1
 }
 
 
 def get_mesh(config):
-    mesh = meshio.read('/home/yawnlion/Desktop/PYproject/3D_deepSDF/data/data_set/sphere.msh')
+    mesh = meshio.read('/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/sphere.msh')
     faces = mesh.get_cells_type("triangle")
     points = mesh.points
     return np.array(points), np.array(faces)
 
 def kernel(x1, x2):
-    l = 3
-    sigma = 2
+    l = 0.5
+    sigma = 0.1
     x = x1 - x2
-    return np.exp(- (np.dot(x, x) * l) / (2 * sigma**2))
+    Range = 3.0
+    return sigma**2 * np.exp(- (np.dot(x, x) / Range) / l**2)
 
 array_kernel = vmap(kernel, in_axes = (0, 0), out_axes = (0))
 matrix_kernel = jit(vmap(array_kernel, in_axes = (0, 0), out_axes = (0)))
