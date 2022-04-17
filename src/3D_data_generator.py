@@ -9,13 +9,22 @@ from jax import vmap
 import argparse
 from jax.numpy.linalg import norm
 from jax import random
-
+from .argument import args
 
 config = {
     'num_query':12800,
     'num_shape':20,
     'batch_size':5
 }
+config['num_shape'] = args.num_shape_train
+
+
+infer_cofig = {
+    'num_shape' : 3,
+    'mesh_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/sphere.msh'
+}
+
+infer_cofig['num_shape'] = args.num_shape_infer
 
 def d_to_line_seg(P, A, B):
     '''Distance of a point P to a line segment AB'''
@@ -190,6 +199,38 @@ def get_supervised_data(config):
     supervised_data = np.concatenate([query, shape_index, batch_sdf], 1)
     np.save('data/data_set/supervised_data.npy', supervised_data)
     print('{} entry has generated,sample here{}'.format(Len, supervised_data[0]))
+
+
+
+def infer_data_generator(num_shape, num_division, ):
+    radius_samples = generate_radius_samples(num_shape, num_division)
+    batch_boundary_points = compute_boundary_points(radius_samples)
+    #print(batch_boundary_points)
+    onp.save('data/data_set/infer_batch_verts.npy',
+            batch_boundary_points)
+    shape = batch_boundary_points.shape
+    size_len = shape[0] * shape[1]
+    batch_boundary_points = batch_boundary_points.reshape(size_len, shape[2])
+    #print(batch_boundary_points)
+    
+    shape_index = np.arange(num_shape)
+    shape_index = np.repeat(shape_index, num_division)
+    shape_index = shape_index.reshape(shape_index.size, 1)
+    sdf = np.zeros(size_len).reshape(size_len,1)
+    infer_boundary = np.concatenate([batch_boundary_points, shape_index, sdf], 1)
+    disturbed_data = vmap_disturb_boundary(infer_boundary, 10)
+    shape_data = disturbed_data.shape
+    disturbed_data = disturbed_data.reshape(shape_data[0]*shape_data[1], shape_data[2])
+    infer_data = np.concatenate([disturbed_data, infer_boundary], 0)
+    print(infer_data.shape)
+    print(infer_data[0])
+    onp.save('/gpfs/share/home/1900011026/2D_deepSDF/data/data_set/infer_data.npy', 
+            infer_boundary)
+
+
+
+
+
 
 if __name__ == '__main__':
     get_supervised_data(config)

@@ -82,6 +82,7 @@ def mesh_for_show(batch_verts, faces, shape):
   mesh = trimesh.Trimesh(vertices = v, faces = f)
   return mesh
 
-
+'''
 np_mesh = mesh_for_show(batch_verts, faces, 1)
 np_mesh.show()
+'''

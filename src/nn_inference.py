@@ -20,9 +20,15 @@ from .argument import args
 from .nn_train import loss, batch_forward, forward
 
 
-config = {'data_path':'/home/yawnlion/Desktop/PYproject/2D_deepSDF/data/data_set/infer_data.npy',
+config = {'data_path':'data/data_set/infer_data.npy',
         'mode':'infer',
-        'loss_record_path':'/home/yawnlion/Desktop/PYproject/2D_deepSDF/data/model/infer_loss_record.npy'}
+        'loss_record_path':'data/model/infer_loss_record.npy'}
+
+args.batch_size = 1487
+args.learning_rate = 0.005
+args.num_epochs = 2048
+
+
 
 
 def infer_loss(infer_latent, nn, in_array, sdf):
@@ -62,7 +68,7 @@ def run_infer_loop(nn):
             start_time = time.time()
     onp.save(config['loss_record_path'], infer_loss_record)
     infered_params = [infer_latent, nn]
-    file_w = open("/home/yawnlion/Desktop/PYproject/2D_deepSDF/data/model/infered_params.txt", "wb")
+    file_w = open("data/model/infered_params.txt", "wb")
     pickle.dump(infered_params, file_w)
 
 

@@ -64,7 +64,7 @@ def get_batch_verts(config):
 def generate_particles(config):
     batch_verts, faces, radius = get_batch_verts(config)
     np.save('data/data_set/radius.npy', radius)
-    np.save('data/data_set/batch_verts.npy', batch_verts)
+    np.save('data/data_set/train_batch_verts.npy', batch_verts)
     np.save('data/data_set/faces.npy', faces)
 
 if __name__ == '__main__':

@@ -70,7 +70,7 @@ def plot_learning_curve(loss_record_path, mode):
     x_1 = range(total_steps)
     plt.figure(figsize = (6, 4))
     plt.plot(x_1, loss, c='tab:red', label = mode)
-    plt.ylim(-4., 4.)
+    plt.ylim(-3., 10.)
     plt.xlabel('steps')
     plt.ylabel('logged MSE loss')
     plt.title('Learning curve of {}'.format(mode))
