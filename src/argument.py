@@ -14,17 +14,17 @@ ap.add_argument('--activation', choices = ['tanh', 'selu', 'relu'], default = 'r
 # select activate function in console
 ap.add_argument('--num_division', type=int, default = 9)
 #differently from 2D situation, denote the division of phi and theta
-ap.add_argument('--num_epochs', type = int, default = 2880)
+ap.add_argument('--num_epochs', type = int, default = 1440)
 ap.add_argument('--convariance', type = float, default = 0.1)
 ap.add_argument('--latent_len', type = int , default = 64)
 ap.add_argument('--width_hidden', type = int, default = 256)
 ap.add_argument('--out_len', type = int, default = 1)
-ap.add_argument('--learning_rate', type = float, default = 0.0075)
-ap.add_argument('--batch_size', type = int, default = 25600)
+ap.add_argument('--learning_rate', type = float, default = 0.001)
+ap.add_argument('--batch_size', type = int, default = 6400)
 ap.add_argument('--point_dim', type = int, default = 3)
-ap.add_argument('--n_hidden', type = int, default = 4)
+ap.add_argument('--n_hidden', type = int, default = 5)
 ap.add_argument('--skip', action = 'store_true', default = True)
-ap.add_argument('--n_skip', type = int, default = 4)
+ap.add_argument('--n_skip', type = int, default = 5)
 ap.add_argument('--n_jobs', type = int, default = 0)
 args=ap.parse_args()
 

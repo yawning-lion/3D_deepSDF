@@ -109,8 +109,8 @@ if __name__ == '__main__':
     arr1 = sin(theta).reshape(num_seeds, 1)
     arr2 = cos(theta).reshape(num_seeds, 1)
     #seeds = np.concatenate([arr1, arr2], 1)
-    mode = 'infer'
-    file_read = open("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/model/{}ed_params.txt".format(mode), "rb")
+    mode = 'train'
+    file_read = open("/gpfs/share/home/1900011026/3D_deepSDF/data/model/{}ed_params.txt".format(mode), "rb")
     params = pickle.load(file_read)
     #refined_seeds = run_refine_seeds_loop(seeds, shape, params)
     batch_seeds = []
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         refined_seeds = run_refine_seeds_loop(raw_seeds, i, params)
         batch_seeds.append(refined_seeds)
     batch_seeds = np.asarray(batch_seeds)
-    onp.save('/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/{}_seeds.npy'.format(mode), batch_seeds)
+    onp.save('/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/{}_seeds.npy'.format(mode), batch_seeds)
     '''
     plt.figure(figsize=(5, 5))
     plt.scatter(refined_seeds[:, 0], refined_seeds[:, 1], s=1)

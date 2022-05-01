@@ -20,16 +20,16 @@ from .particles_generator import get_batch_verts
 import trimesh
 from .test_shape import mesh_for_show
 
-config = {'data_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/supervised_data.npy',
+config = {'data_path':'/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/supervised_data.npy',
         'mode':'train',
-        'loss_record_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/model/train_loss_record.npy'}
+        'loss_record_path':'/gpfs/share/home/1900011026/3D_deepSDF/data/model/train_loss_record.npy'}
 
 #plot_learning_curve(config['loss_record_path'], config['mode'])
 
 
 infer_config = {
     'num_shape' : 3,
-    'mesh_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/sphere.msh',
+    'mesh_path':'/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/sphere.msh',
     'mean' : 1
 }
 
@@ -62,8 +62,8 @@ def get_infer_data(config):
 if __name__ == '__main__':
     #get_infer_data(infer_config)
     mode = 'infer'
-    boundary = np.load("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/{}_batch_verts.npy".format(mode))
-    seeds = np.load("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/{}_seeds.npy".format(mode))
+    boundary = np.load("/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/{}_batch_verts.npy".format(mode))
+    seeds = np.load("/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/{}_seeds.npy".format(mode))
     shape = 2
     verts1 = boundary[shape]
     seeds1 = seeds[shape]
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     #cloud1.show()
     cloud1_scene = cloud1.scene()
     cloud1_scene.show()
-    faces = np.load("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/faces.npy".format(mode))
+    faces = np.load("/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/faces.npy".format(mode))
     mesh2 = mesh_for_show(boundary, faces, shape)
     cloud1_scene.add_geometry(mesh2)
     cloud1_scene.show()

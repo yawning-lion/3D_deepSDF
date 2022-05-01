@@ -158,28 +158,40 @@ def from_spherical_to_catesian(spherical):
 
 vmap_from_spherical_to_catesian = jit(vmap(from_spherical_to_catesian, in_axes = 0, out_axes = 0))
 
-
+'''
 def get_query(Min, Max, config):
     lower = np.where((Min - 0.3) > 0, Min - 0.3, 0)
     upper = Max + 0.3
-    key = random.PRNGKey((Max / Min).astype(int))
-    r_query = random.uniform(key, (config['num_query'], 1), 'float64', lower, upper)
-    theta_query = random.uniform(key, (config['num_query'], 1), 'float64', 0, pi)
-    phi_query = random.uniform(key, (config['num_query'], 1), 'float64', 0, 2 * pi)
+    r_query = onp.random.uniform(lower, upper, (config['num_query'], 1))
+    onp.random.shuffle(r_query)
+    theta_query = onp.random.uniform(0, pi, (config['num_query'], 1))
+    onp.random.shuffle(theta_query)
+    phi_query = onp.random.uniform( 0, 2 * pi, (config['num_query'], 1))
+    onp.random.shuffle(phi_query)
     sphere_query = np.concatenate([r_query, theta_query, phi_query], 1)
     query = vmap_from_spherical_to_catesian(sphere_query)
     return query
+'''
 
+def get_query (Min, Max, config):
+    query = onp.random.uniform(-3., 3., (config['num_query'], 3))
+    return query
+    
 vmap_get_query = vmap(get_query, in_axes = (0,0, None), out_axes = 0)
 
 #loop, because of the memory limit
 def get_supervised_data(config):
     radius = np.load('data/data_set/radius.npy')
-    batch_verts = np.load('data/data_set/batch_verts.npy')
+    batch_verts = np.load('data/data_set/train_batch_verts.npy')
     faces = np.load('data/data_set/faces.npy')
     Min = np.min(radius, 1).reshape(config['num_shape'], )
     Max = np.max(radius, 1).reshape(config['num_shape'], )
-    query = vmap_get_query(Min, Max, config)
+    query = []
+    for i in range(config['num_shape']):
+        single_query = get_query(Min[i], Max[i], config)
+        query.append(single_query)
+        
+    query = np.asarray(query)
     Len = config['num_shape'] * config['num_query']
     batch_len = config['batch_size'] * config['num_query']
     batch_query = query[0:config['batch_size']]

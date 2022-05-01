@@ -19,9 +19,9 @@ from .argument import args
 
 
 
-config = {'data_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/supervised_data.npy',
+config = {'data_path':'/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/supervised_data.npy',
         'mode':'train',
-        'loss_record_path':'/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/model/train_loss_record.npy'}
+        'loss_record_path':'/gpfs/share/home/1900011026/3D_deepSDF/data/model/train_loss_record.npy'}
 
 
 def get_mlp(args):
@@ -82,7 +82,9 @@ def loss(params, in_array, sdf, boundary_input):
     latent_loss = np.linalg.norm(params[0])
     return latent_loss / args.convariance + sdf_loss + boundary_loss(params, boundary_input)
 
-
+def single_forward(params, point):
+    in_array = append_latent(params[0], point)
+    return batch_forward(params[1], in_array)[0]
 
 
 @jit
@@ -100,7 +102,7 @@ def run_training_loop():
     params = get_params(opt_state)
     train_loader = SDF_dataloader(config['data_path'], config['mode'], args)
     start_time = time.time()
-    boundary = np.load("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/data_set/batch_verts.npy")
+    boundary = np.load("/gpfs/share/home/1900011026/3D_deepSDF/data/data_set/train_batch_verts.npy")
     shape_boundary = boundary.shape
     boundary = boundary.reshape(shape_boundary[0]*shape_boundary[1], shape_boundary[2])
     shape_index = np.arange(args.num_shape_train)
@@ -120,7 +122,9 @@ def run_training_loop():
             epoch_time = time.time() - start_time
             print("Epoch {} | T: {:0.2f} | Train_loss: {:0.6f} ".format(epoch+1, epoch_time, train_loss))
             start_time = time.time()
-    file_w = open("/home/ubuntu/DESKTOP/rsc/3D_deepSDF/data/model/trained_params.txt", "wb")
+            file_w = open("/gpfs/share/home/1900011026/3D_deepSDF/data/model/trained_params.txt", "wb")
+            pickle.dump(params, file_w)
+    file_w = open("/gpfs/share/home/1900011026/3D_deepSDF/data/model/trained_params.txt", "wb")
     pickle.dump(params, file_w)
     onp.save(config['loss_record_path'], train_loss_record)
 
